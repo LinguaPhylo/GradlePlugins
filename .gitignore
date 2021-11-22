@@ -1,8 +1,15 @@
+# macOS Files
+**/.DS_Store
+
 # Compiled class file
 *.class
 
 # Log file
 *.log
+
+**/build/
+**/.gradle/
+**/.idea/
 
 # BlueJ files
 *.ctxt
