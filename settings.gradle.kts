@@ -1,3 +1,3 @@
-rootProject.name = "conventions"
+rootProject.name = "GradlePlugins"
 
-include("lphy-conventions")
+include("platforms")

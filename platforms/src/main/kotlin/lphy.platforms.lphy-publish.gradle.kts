@@ -13,7 +13,7 @@ plugins {
     //`java-library`
     `maven-publish`
     signing
-    id("lphy.conventions.lphy-java")
+    id("lphy.platforms.lphy-java")
 }
 
 // Projects have the 'io.github.linguaphylo' group by convention
