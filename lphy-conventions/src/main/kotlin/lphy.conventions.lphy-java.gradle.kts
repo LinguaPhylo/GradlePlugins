@@ -1,3 +1,8 @@
+/**
+ * Created by Walter Xie
+ * Copyright (c) 2022. All rights reserved.
+ */
+
 // Define Java conventions for this organization.
 // Projects need to use the Java, Checkstyle and Spotbugs plugins.
 
@@ -9,7 +14,7 @@ java {
     sourceCompatibility = JavaVersion.VERSION_16
     targetCompatibility = JavaVersion.VERSION_16
     withSourcesJar()
-    //withJavadocJar()
+    withJavadocJar()
 }
 
 // overwrite compileJava to use module-path

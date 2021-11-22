@@ -1,3 +1,8 @@
+/**
+ * Created by Walter Xie
+ * Copyright (c) 2022. All rights reserved.
+ */
+
 import java.nio.file.Files
 import java.nio.file.Paths
 
