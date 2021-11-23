@@ -4,11 +4,12 @@ import java.nio.file.Paths
 plugins {
     `kotlin-dsl`
     `maven-publish`
-//    id("lphy.conventions.lphy-publish")
 }
+// TODO
+//apply(from = "src/main/kotlin/lphy.platforms.lphy-publish.gradle.kts")
 
 group = "io.github.linguaphylo"
-version = "0.0.1-SNAPSHOT"
+version = "0.1.0-SNAPSHOT"
 
 //compileJava and compileKotlin should be set to the same Java version.
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

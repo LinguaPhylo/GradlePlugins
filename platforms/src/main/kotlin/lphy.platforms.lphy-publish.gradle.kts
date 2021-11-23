@@ -16,7 +16,7 @@ plugins {
 //    id("lphy.platforms.lphy-java")
 }
 
-//TODO Projects have the 'io.github.linguaphylo' group by convention
+// TODO Projects have the 'io.github.linguaphylo' group by convention
 //group = "io.github.linguaphylo"
 
 val isReleaseVersion: Boolean = !version.toString().endsWith("SNAPSHOT")
