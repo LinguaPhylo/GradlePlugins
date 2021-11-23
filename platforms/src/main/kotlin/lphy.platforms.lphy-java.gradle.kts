@@ -4,7 +4,7 @@
  */
 
 // Define Java conventions for this organization.
-// Projects need to use the Java, Checkstyle and Spotbugs plugins.
+// Projects need to use the Java library plugin.
 
 plugins {
     `java-library`

@@ -6,14 +6,14 @@
 import java.nio.file.Files
 import java.nio.file.Paths
 
-// Define Java Library conventions for this organization.
-// Projects need to use the organization's Java conventions and publish using Maven Publish
-
+// Define maven publishing conventions for this organization.
+// Projects need to use java-library, signing and maven-publish plugins.
+// The organization's Java conventions can be required separately
 plugins {
-    //`java-library`
+    `java-library`
     `maven-publish`
     signing
-    id("lphy.platforms.lphy-java")
+//    id("lphy.platforms.lphy-java")
 }
 
 //TODO Projects have the 'io.github.linguaphylo' group by convention
