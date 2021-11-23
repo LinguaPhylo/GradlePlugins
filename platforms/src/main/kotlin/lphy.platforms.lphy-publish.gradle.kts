@@ -16,13 +16,13 @@ plugins {
     id("lphy.platforms.lphy-java")
 }
 
-// Projects have the 'io.github.linguaphylo' group by convention
+//TODO Projects have the 'io.github.linguaphylo' group by convention
 //group = "io.github.linguaphylo"
 
 val isReleaseVersion: Boolean = !version.toString().endsWith("SNAPSHOT")
 val hasOSSRHCredentials: Boolean = hasProperty("ossrh.user") && hasProperty("ossrh.pswd")
 
-// if OSSRH properties are given, then publish to maven central
+// if OSSRH credentials are given in CMD, then publish to maven central
 tasks.withType<PublishToMavenRepository>().configureEach {
     onlyIf {
         val toMaven = ( repository == publishing.repositories["maven"] && hasOSSRHCredentials )
@@ -57,51 +57,13 @@ tasks.withType<PublishToMavenRepository>().configureEach {
     }
 }
 
+// create your own MavenPublication in your build
 publishing {
-    publications {
-        create<MavenPublication>("lphy-ext") {
-            artifactId = project.base.archivesName.get()
-            from(components["java"])
-            // Configures the version mapping strategy
-            versionMapping {
-                usage("java-api") {
-                    fromResolutionOf("runtimeClasspath")
-                }
-                usage("java-runtime") {
-                    fromResolutionResult()
-                }
-            }
-            pom {
-                name.set(project.name)
-                description.set("A probabilistic model specification language to concisely and precisely define phylogenetic models.")
-                url.set("https://linguaphylo.github.io/")
-                packaging = "jar"
-                properties.set(mapOf(
-                    "maven.compiler.source" to java.sourceCompatibility.majorVersion,
-                    "maven.compiler.target" to java.targetCompatibility.majorVersion
-                ))
-                licenses {
-                    license {
-                        name.set("GNU Lesser General Public License, version 3")
-                        url.set("https://www.gnu.org/licenses/lgpl-3.0.txt")
-                    }
-                }
-                developers {
-                    developer {
-                        name.set("LPhy developer team")
-                    }
-                }
-                // https://central.sonatype.org/publish/requirements/
-                scm {
-                    connection.set("scm:git:git://github.com/LinguaPhylo/linguaPhylo.git")
-                    developerConnection.set("scm:git:ssh://github.com/LinguaPhylo/linguaPhylo.git")
-                    url.set("https://github.com/LinguaPhylo/linguaPhylo")
-                }
-            }
-        }
-
-    }
+//    publications {
+//        create<MavenPublication>("lphy-ext") {
+//  ...
     repositories {
+        // both urls are defined in tasks.withType<PublishToMavenRepository>().configureEach
         maven {
             // publish to maven
             name = "maven"
@@ -115,32 +77,22 @@ publishing {
             authentication {
                 create<BasicAuthentication>("basic")
             }
-//            val releaseOSSRH = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-//            val snapshotOSSRH = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-//            url = uri(if (project.version.toString().endsWith("SNAPSHOT")) snapshotOSSRH else releaseOSSRH)
         }
         maven {
             // if "ossrh.user" not provided, then publish to local
             name = "local"
-//            val releaseLocal = uri(layout.buildDirectory.dir("releases"))
-//            val snapshotLocal = uri(layout.buildDirectory.dir("snapshots"))
-//            url = if (project.version.toString().endsWith("SNAPSHOT")) snapshotLocal else releaseLocal
-//            val path: java.nio.file.Path = Paths.get(url.path)
-//            if (Files.exists(path)) {
-//                println("Delete the existing previous release : ${path.toAbsolutePath()}")
-//                project.delete(path)
-//            }
         }
     }
 }
 
 // -Psigning.secretKeyRingFile=/path/to/mysecr.gpg -Psigning.password=mypswd -Psigning.keyId=last8chars
+// only signing publications whose names contain "lphy"
 signing {
     // Conditional Signing
     setRequired({
         isReleaseVersion && gradle.taskGraph.hasTask("publish")
     })
-    sign(publishing.publications["lphy-ext"])
+    sign(publishing.publications.matching{ it!!.name.toLowerCase().contains("lphy") })
 }
 
 
