@@ -46,12 +46,13 @@ public class LPhyJavaPlugin implements Plugin<Project> {
             // use the project's version or define one directly
             jc.getOptions().getJavaModuleVersion().set(project.getVersion().toString());
             jc.doFirst(task -> {
-                System.out.println("Java version used is ${JavaVersion.current()}.");
+                System.out.println("Current Java version is " + JavaVersion.current() + ".");
                 FileCollection classpath = jc.getClasspath();
                 jc.getOptions().setCompilerArgs(List.of("--module-path", classpath.getAsPath()));
 //                jc.setClasspath();
             });
-            jc.doLast(task -> System.out.println("${project.name} compiler args = ${options.compilerArgs}"));
+            jc.doLast(task -> System.out.println(project.getName() +
+                    " Java compiler args = " + jc.getOptions().getAllCompilerArgs().toString()));
         });
 
         /* tasks.javadoc {
