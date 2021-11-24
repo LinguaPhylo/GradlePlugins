@@ -3,6 +3,8 @@
  * Copyright (c) 2022. All rights reserved.
  */
 
+package io.github.linguaphylo.lphy.platforms
+
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -13,7 +15,7 @@ plugins {
     `java-library`
     `maven-publish`
     signing
-//    id("lphy.platforms.lphy-java")
+    //id("lphy.platforms.lphy-java")
 }
 
 // TODO Projects have the 'io.github.linguaphylo' group by convention
@@ -41,16 +43,18 @@ tasks.withType<PublishToMavenRepository>().configureEach {
             else
                 repository.setUrl(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         } else {
-            if (isRel)
+//            if (isRel)
                 repository.setUrl(uri(layout.buildDirectory.dir("releases")))
-            else
-                repository.setUrl(uri(layout.buildDirectory.dir("snapshots")))
-            // del previous release folder
-            val path: java.nio.file.Path = Paths.get(repository.url.path)
-            if (Files.exists(path)) {
-                println("Delete the existing previous release : ${path.toAbsolutePath()}")
-                project.delete(path)
-            }
+//            else
+//                repository.setUrl(uri(layout.buildDirectory.dir("snapshots")))
+
+            // removed, use ./gradlew clean build --no-build-cache
+              // del previous release folder
+//            val path: java.nio.file.Path = Paths.get(repository.url.path)
+//            if (Files.exists(path)) {
+//                println("Delete the existing previous release : ${path.toAbsolutePath()}")
+//                project.delete(path)
+//            }
         }
         println("Publish ${project.name}:${project.version} to ${repository?.name} repository, " +
                 "URL = ${repository?.url}")

@@ -2,29 +2,24 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 plugins {
-    `kotlin-dsl`
+    //`kotlin-dsl`
     `maven-publish`
+    `java-gradle-plugin`
+    id("com.gradle.plugin-publish") version "0.18.0"
+//    id("io.github.linguaphylo.platforms.lphy-java")
+//    id("io.github.linguaphylo.platforms.lphy-publish")
 }
-// TODO
-//apply(from = "src/main/kotlin/lphy.platforms.lphy-publish.gradle.kts")
 
+//base.archivesName.set("lphy-platforms")
 group = "io.github.linguaphylo"
-version = "0.1.0-SNAPSHOT"
+version = "0.1.0"
 
-//compileJava and compileKotlin should be set to the same Java version.
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-    kotlinOptions.jvmTarget = "16"
-}
-
-// Projects should use Maven Central for external dependencies
-// This could be the organization's private repository
 repositories {
-    gradlePluginPortal() // so that external plugins can be resolved in dependencies section
+    gradlePluginPortal()
 }
 
 dependencies {
-//    implementation("gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.6.2")
-    testImplementation("junit:junit:4.13")
+//    testImplementation("junit:junit:4.13")
 }
 
 publishing {
@@ -32,15 +27,49 @@ publishing {
         maven {
             // to local build/plugins
             url = uri(layout.buildDirectory.dir("plugins"))
-            val path: java.nio.file.Path = Paths.get(url.path)
-            if (Files.exists(path)) {
-                println("Delete the existing previous release : ${path.toAbsolutePath()}")
-                project.delete(path)
-            }
         }
     }
 }
 
+gradlePlugin {
+    plugins {
+        create("lphy-java") {
+            id = "io.github.linguaphylo.lphy-java"
+            implementationClass = "io.github.linguaphylo.platforms.LPhyJavaPlugin"
+        }
+        create("lphy-publish") {
+            id = "io.github.linguaphylo.lphy-publish"
+            implementationClass = "io.github.linguaphylo.platforms.LPhyPublishPlugin"
+        }
+    }
+}
 
+pluginBundle {
+    website = "https://github.com/LinguaPhylo/GradlePlugins"
+    vcsUrl = "https://github.com/LinguaPhylo/GradlePlugins"
+    description = "Gradle plugins for LPhy conventions"
+
+    (plugins) {
+        "lphy-java" {
+            // id is captured from java-gradle-plugin configuration
+            displayName = "Gradle LPhy Java Plugin"
+            description = "Use Java 16 and overwrite java related tasks to use module-path."
+            tags = listOf("gradle", "lphy", "java")
+            version = project.version.toString()
+        }
+        "lphy-publish" {
+            // id is captured from java-gradle-plugin configuration
+            displayName = "Gradle Maven Publish Plugin"
+            description = "Plugin that provides conventions for building and publishing Docker images for Java applications."
+            tags = listOf("gradle", "lphy", "maven-publish")
+            version = project.version.toString()
+        }
+    }
+//    mavenCoordinates {
+//        groupId = project.group.toString()
+//        artifactId = project.name
+//        version = project.version.toString()
+//    }
+}
 
 

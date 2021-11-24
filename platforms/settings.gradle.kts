@@ -1,4 +1,4 @@
-rootProject.name="platforms"
+//rootProject.name="platforms"
 
 //pluginManagement {
 //    repositories {
