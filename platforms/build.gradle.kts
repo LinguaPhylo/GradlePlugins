@@ -1,13 +1,10 @@
-import java.nio.file.Files
-import java.nio.file.Paths
-
 plugins {
     //`kotlin-dsl`
     `maven-publish`
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "0.18.0"
-//    id("io.github.linguaphylo.platforms.lphy-java")
-//    id("io.github.linguaphylo.platforms.lphy-publish")
+//    id("io.github.linguaphylo.platforms.lphy-java") version "0.1.0"
+//    id("io.github.linguaphylo.platforms.lphy-publish") version "0.1.0"
 }
 
 //base.archivesName.set("lphy-platforms")
@@ -16,6 +13,7 @@ version = "0.1.0"
 
 repositories {
     gradlePluginPortal()
+    mavenCentral()
 }
 
 dependencies {
