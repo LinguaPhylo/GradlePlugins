@@ -17,7 +17,7 @@ import java.util.List;
  * @author Walter Xie
  */
 public class LPhyJavaPlugin implements Plugin<Project> {
-    public void apply(Project project) {
+    public void apply(final Project project) {
 
         // plugins {  `java-library` }
         project.getPlugins().apply(JavaLibraryPlugin.class);
@@ -73,6 +73,7 @@ public class LPhyJavaPlugin implements Plugin<Project> {
             }
         } */
         project.getTasks().withType(org.gradle.api.tasks.javadoc.Javadoc.class).configureEach(doc -> {
+            // avoid error
             ((StandardJavadocDocletOptions) doc.getOptions()).addBooleanOption("html5", true);
             // turn off warnings
             ((StandardJavadocDocletOptions) doc.getOptions()).addStringOption("Xdoclint:none", "-quiet");
