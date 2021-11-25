@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
  * Define maven publishing conventions.
  * Require signing and maven-publish plugins.
  * Java conventions are defined separately.
- * @see LPhyJavaPlugin
+ * @see LPhyConventionJavaPlugin
  *
  * @author Walter Xie
  */

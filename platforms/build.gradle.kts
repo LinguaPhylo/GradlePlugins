@@ -33,7 +33,7 @@ gradlePlugin {
     plugins {
         create("lphy-java") {
             id = "io.github.linguaphylo.platforms.lphy-java"
-            implementationClass = "io.github.linguaphylo.platforms.LPhyJavaPlugin"
+            implementationClass = "io.github.linguaphylo.platforms.LPhyConventionJavaPlugin"
         }
         create("lphy-publish") {
             id = "io.github.linguaphylo.platforms.lphy-publish"

@@ -2,7 +2,7 @@ package io.github.linguaphylo.platforms;
 
 import org.gradle.api.*;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.plugins.JavaLibraryPlugin;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
@@ -16,22 +16,24 @@ import java.util.List;
  *
  * @author Walter Xie
  */
-public class LPhyJavaPlugin implements Plugin<Project> {
-    public void apply(final Project project) {
+public class LPhyConventionJavaPlugin implements Plugin<Project> {
 
-        // plugins {  `java-library` }
-        project.getPlugins().apply(JavaLibraryPlugin.class);
+    public static final JavaVersion MIN_JAVA_VERSION = JavaVersion.VERSION_16;
+
+    public void apply(final Project project) {
 
         /* java {
               sourceCompatibility = JavaVersion.VERSION_16
               targetCompatibility = JavaVersion.VERSION_16
               withSourcesJar()
               withJavadocJar()  } */
-        JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
-        extension.setSourceCompatibility(JavaVersion.VERSION_16);
-        extension.setTargetCompatibility(JavaVersion.VERSION_16);
-        extension.withSourcesJar();
-        extension.withJavadocJar();
+        project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+            JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
+            extension.setSourceCompatibility(MIN_JAVA_VERSION);
+            extension.setTargetCompatibility(MIN_JAVA_VERSION);
+            extension.withSourcesJar();
+            extension.withJavadocJar();
+        });
 
         /* tasks.compileJava {
             options.javaModuleVersion.set(provider { project.version as String })
@@ -50,7 +52,16 @@ public class LPhyJavaPlugin implements Plugin<Project> {
             jc.doFirst(new Action<Task>() {
                 @Override
                 public void execute(Task task) {
-                    System.out.println("Current Java version is " + JavaVersion.current() + ".");
+                    // JVM version convention
+                    if ( !JavaVersion.toVersion(jc.getSourceCompatibility()).isCompatibleWith(MIN_JAVA_VERSION)
+                            || !JavaVersion.toVersion(jc.getTargetCompatibility()).isCompatibleWith(MIN_JAVA_VERSION)
+                            || !JavaVersion.current().isCompatibleWith(MIN_JAVA_VERSION) )
+                        throw new GradleException("Require Java version >= " + MIN_JAVA_VERSION +
+                                " ! But the current version = " +  JavaVersion.current() +
+                                ", source = " + jc.getSourceCompatibility() + ", target = " + jc.getTargetCompatibility());
+                    System.out.println("Current Java version = " + JavaVersion.current() + ", sourceCompatibility = " +
+                            jc.getSourceCompatibility() + ", targetCompatibility = " + jc.getTargetCompatibility() + ".");
+
                     FileCollection classpath = jc.getClasspath();
                     jc.getOptions().setCompilerArgs(List.of("--module-path", classpath.getAsPath()));
 //                jc.setClasspath();
