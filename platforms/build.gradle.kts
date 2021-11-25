@@ -34,11 +34,11 @@ publishing {
 gradlePlugin {
     plugins {
         create("lphy-java") {
-            id = "io.github.linguaphylo.lphy-java"
+            id = "io.github.linguaphylo.platforms.lphy-java"
             implementationClass = "io.github.linguaphylo.platforms.LPhyJavaPlugin"
         }
         create("lphy-publish") {
-            id = "io.github.linguaphylo.lphy-publish"
+            id = "io.github.linguaphylo.platforms.lphy-publish"
             implementationClass = "io.github.linguaphylo.platforms.LPhyPublishPlugin"
         }
     }

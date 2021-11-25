@@ -5,14 +5,11 @@
 
 package io.github.linguaphylo.lphy.platforms
 
-import java.nio.file.Files
-import java.nio.file.Paths
-
 // Define maven publishing conventions for this organization.
 // Projects need to use java-library, signing and maven-publish plugins.
 // The organization's Java conventions can be required separately
 plugins {
-    `java-library`
+    //`java-library`
     `maven-publish`
     signing
     //id("lphy.platforms.lphy-java")

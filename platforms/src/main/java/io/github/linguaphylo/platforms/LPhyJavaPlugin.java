@@ -1,8 +1,6 @@
 package io.github.linguaphylo.platforms;
 
-import org.gradle.api.JavaVersion;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
+import org.gradle.api.*;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -12,6 +10,10 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 import java.util.List;
 
 /**
+ * Define Java conventions using Java 16
+ * and the Java Platform Module System (JPMS).
+ * Overwrite Java related tasks to use module-path.
+ *
  * @author Walter Xie
  */
 public class LPhyJavaPlugin implements Plugin<Project> {
@@ -45,14 +47,22 @@ public class LPhyJavaPlugin implements Plugin<Project> {
         project.getTasks().withType(JavaCompile.class).configureEach(jc -> {
             // use the project's version or define one directly
             jc.getOptions().getJavaModuleVersion().set(project.getVersion().toString());
-            jc.doFirst(task -> {
-                System.out.println("Current Java version is " + JavaVersion.current() + ".");
-                FileCollection classpath = jc.getClasspath();
-                jc.getOptions().setCompilerArgs(List.of("--module-path", classpath.getAsPath()));
+            jc.doFirst(new Action<Task>() {
+                @Override
+                public void execute(Task task) {
+                    System.out.println("Current Java version is " + JavaVersion.current() + ".");
+                    FileCollection classpath = jc.getClasspath();
+                    jc.getOptions().setCompilerArgs(List.of("--module-path", classpath.getAsPath()));
 //                jc.setClasspath();
+                }
             });
-            jc.doLast(task -> System.out.println(project.getName() +
-                    " Java compiler args = " + jc.getOptions().getAllCompilerArgs().toString()));
+            jc.doLast(new Action<Task>() {
+                @Override
+                public void execute(Task task) {
+                    System.out.println(project.getName() + " Java compiler args = " +
+                            jc.getOptions().getAllCompilerArgs().toString());
+                }
+            });
         });
 
         /* tasks.javadoc {
@@ -64,9 +74,14 @@ public class LPhyJavaPlugin implements Plugin<Project> {
         } */
         project.getTasks().withType(org.gradle.api.tasks.javadoc.Javadoc.class).configureEach(doc -> {
             ((StandardJavadocDocletOptions) doc.getOptions()).addBooleanOption("html5", true);
-            doc.doFirst(task -> {
-                doc.getOptions().setModulePath(doc.getClasspath().getFiles().stream().toList());
-                doc.getOptions().setClasspath(List.of());
+            // turn off warnings
+            ((StandardJavadocDocletOptions) doc.getOptions()).addStringOption("Xdoclint:none", "-quiet");
+            doc.doFirst(new Action<Task>() {
+                @Override
+                public void execute(Task task) {
+                    doc.getOptions().setModulePath(doc.getClasspath().getFiles().stream().toList());
+                    doc.getOptions().setClasspath(List.of());
+                }
             });
         });
     }
