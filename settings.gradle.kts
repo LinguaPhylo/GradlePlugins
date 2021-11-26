@@ -4,10 +4,14 @@ include("platforms")
 
 pluginManagement {
     repositories {
+//        maven {
+//            // to local build/plugins
+//            url = uri("platforms/build/releases/")
+//            println("Temp repo : ${url}")
+//        }
+        // add sonatype snapshots repository
         maven {
-            // to local build/plugins
-            url = uri("platforms/build/plugins/")
-            println("Temp repo : ${url}")
+            url=uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         }
         gradlePluginPortal()
     }

@@ -1,18 +1,18 @@
 plugins {
-    //`kotlin-dsl`
+    //`java-library`
     `maven-publish`
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "0.18.0"
-//    id("io.github.linguaphylo.platforms.lphy-java") version "0.1.0"
-//    id("io.github.linguaphylo.platforms.lphy-publish") version "0.1.0"
+    id("io.github.linguaphylo.platforms.lphy-java") version "0.1.0-SNAPSHOT"
+    id("io.github.linguaphylo.platforms.lphy-publish") version "0.1.0-SNAPSHOT"
 }
 
 //base.archivesName.set("lphy-platforms")
 group = "io.github.linguaphylo"
-version = "0.1.0"
+version = "0.1.0-SNAPSHOT"
 
 repositories {
-    gradlePluginPortal()
+//    gradlePluginPortal()
     mavenCentral()
 }
 
@@ -21,10 +21,75 @@ dependencies {
 }
 
 publishing {
-    repositories {
-        maven {
-            // to local build/plugins
-            url = uri(layout.buildDirectory.dir("plugins"))
+    // TODO Problem to have any repo, if use plugin
+//    repositories {
+//        maven {
+//            // plugins to local build/releases
+//            url = uri(layout.buildDirectory.dir("releases"))
+//        }
+//    }
+    publications {
+        afterEvaluate {
+            val pluginBundle = project.extensions.getByName("pluginBundle") as com.gradle.publish.PluginBundleExtension
+            named<MavenPublication>("pluginMaven") {
+                pom {
+                    name.set("lphy-platforms")
+                    description.set(pluginBundle.description)
+                    url.set(pluginBundle.website)
+                    developers {
+                        developer {
+                            name.set("Walter Xie")
+                            id.set("walterxie")
+                        }
+                    }
+                    licenses {
+                        license {
+                            name.set("GNU Lesser General Public License, version 3")
+                            url.set("https://www.gnu.org/licenses/lgpl-3.0.txt")
+                        }
+                    }
+                }
+            }
+            named<MavenPublication>("lphy-javaPluginMarkerMaven") {
+                pom {
+                    val plugin = pluginBundle.plugins.getByName("lphy-java")
+                    name.set(plugin.displayName)
+                    description.set(plugin.description)
+                    url.set(pluginBundle.website)
+                    developers {
+                        developer {
+                            name.set("Walter Xie")
+                            id.set("walterxie")
+                        }
+                    }
+                    licenses {
+                        license {
+                            name.set("GNU Lesser General Public License, version 3")
+                            url.set("https://www.gnu.org/licenses/lgpl-3.0.txt")
+                        }
+                    }
+                }
+            }
+            named<MavenPublication>("lphy-publishPluginMarkerMaven") {
+                pom {
+                    val plugin = pluginBundle.plugins.getByName("lphy-publish")
+                    name.set(plugin.displayName)
+                    description.set(plugin.description)
+                    url.set(pluginBundle.website)
+                    developers {
+                        developer {
+                            name.set("Walter Xie")
+                            id.set("walterxie")
+                        }
+                    }
+                    licenses {
+                        license {
+                            name.set("GNU Lesser General Public License, version 3")
+                            url.set("https://www.gnu.org/licenses/lgpl-3.0.txt")
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -33,7 +98,7 @@ gradlePlugin {
     plugins {
         create("lphy-java") {
             id = "io.github.linguaphylo.platforms.lphy-java"
-            implementationClass = "io.github.linguaphylo.platforms.LPhyConventionJavaPlugin"
+            implementationClass = "io.github.linguaphylo.platforms.LPhyJavaPlugin"
         }
         create("lphy-publish") {
             id = "io.github.linguaphylo.platforms.lphy-publish"

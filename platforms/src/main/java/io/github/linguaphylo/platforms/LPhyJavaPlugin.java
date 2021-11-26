@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author Walter Xie
  */
-public class LPhyConventionJavaPlugin implements Plugin<Project> {
+public class LPhyJavaPlugin implements Plugin<Project> {
 
     public static final JavaVersion MIN_JAVA_VERSION = JavaVersion.VERSION_16;
 

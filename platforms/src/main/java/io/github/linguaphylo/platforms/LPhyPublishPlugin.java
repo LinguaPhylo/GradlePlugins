@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
  * Define maven publishing conventions.
  * Require signing and maven-publish plugins.
  * Java conventions are defined separately.
- * @see LPhyConventionJavaPlugin
+ * @see LPhyJavaPlugin
  *
  * @author Walter Xie
  */
@@ -31,22 +31,76 @@ public class LPhyPublishPlugin implements Plugin<Project> {
     public static final String OSS_SNAPSHOT ="https://s01.oss.sonatype.org/content/repositories/snapshots/";
     public static final String OSS_RELEASE ="https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/";
     public static final String PUBLISH_TO_MAVEN_CENTRAL = "maven";
+    public static final String PUBLISH_TO_LOCAL = "local";
+    public static final String LOCAL_RELEASE_DIR = "releases";
 
     public void apply(final Project project) {
-//        project.getPlugins().apply(JavaLibraryPlugin.class);
-        // plugins {  `maven-publish` signing }
-        project.getPlugins().apply(PublishingPlugin.class);
 
         // -Possrh.user=myuser -Possrh.pswd=mypswd
         boolean hasOSSRHCredentials = project.hasProperty(OSSRH_USER) && project.hasProperty(OSSRH_PSWD);
         System.out.println("OSSRH credentials are " + (hasOSSRHCredentials?"":"NOT") + " provided.");
+
         // -Psigning.secretKeyRingFile=/path/to/mysecr.gpg -Psigning.password=mypswd -Psigning.keyId=last8chars
         boolean isSigning = project.hasProperty("signing.password")
                 && project.hasProperty("signing.keyId");
 
-        PublishingExtension pubExt = project.getExtensions().getByType(PublishingExtension.class);
+        // config repos
+        project.getPlugins().withType(PublishingPlugin.class, pubPlugin -> {
+            PublishingExtension pubExt = project.getExtensions().getByType(PublishingExtension.class);
+            /* repositories {
+              maven {
+                name = "maven"
+                val ossrhUser = findProperty("ossrh.user")
+                val ossrhPswd = findProperty("ossrh.pswd")
+                credentials {
+                    username = "$ossrhUser"
+                    password = "$ossrhPswd"
+                }
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
+                url = ...
+              maven {
+                name = "local"
+                url = uri(layout.buildDirectory.dir("releases"))
+              }
+            } */
+            pubExt.repositories(repo -> {
+                if (hasOSSRHCredentials) {
+                    String ossrhUser = String.valueOf(project.property(OSSRH_USER));
+                    String ossrhPswd = String.valueOf(project.property(OSSRH_PSWD));
+                    // publish to maven central
+                    repo.maven(mvn -> {
+                        mvn.setName(PUBLISH_TO_MAVEN_CENTRAL);
+                        mvn.credentials(cred -> {
+                            cred.setUsername(ossrhUser);
+                            cred.setPassword(ossrhPswd);
+                        });
+                        mvn.authentication(auth -> {
+                            auth.create("basic", BasicAuthentication.class);
+                        });
 
-        // some code only work inside task
+                        try {
+                            // set to SNAPSHOT as default, update in tasks.withType(PublishToMavenRepository.class)
+                            mvn.setUrl(new URI(OSS_SNAPSHOT));
+                        } catch (URISyntaxException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                } else {
+                    // if "ossrh.user" not provided, then publish to local
+                    repo.maven(mvn -> {
+                        mvn.setName(PUBLISH_TO_LOCAL);
+                        DirectoryProperty buildDir = project.getLayout().getBuildDirectory();
+                        mvn.setUrl(buildDir.dir(LOCAL_RELEASE_DIR));
+                    });
+                }
+            });
+
+        });
+
+
+        // update url, and signing MavenPublication
         project.getTasks().withType(PublishToMavenRepository.class)
                 .configureEach(pubTo -> {
                     pubTo.doFirst(task -> {
@@ -78,58 +132,6 @@ public class LPhyPublishPlugin implements Plugin<Project> {
                                 " version " + project.getVersion());
                     });
                 });
-
-        /* repositories {
-          maven {
-            name = "maven"
-            val ossrhUser = findProperty("ossrh.user")
-            val ossrhPswd = findProperty("ossrh.pswd")
-            credentials {
-                username = "$ossrhUser"
-                password = "$ossrhPswd"
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
-            url = ...
-          maven {
-            name = "local"
-            url = uri(layout.buildDirectory.dir("releases"))
-          }
-        } */
-        // -Possrh.user=myuser -Possrh.pswd=mypswd
-        pubExt.repositories(repo -> {
-            if (hasOSSRHCredentials) {
-                String ossrhUser = String.valueOf(project.property(OSSRH_USER));
-                String ossrhPswd = String.valueOf(project.property(OSSRH_PSWD));
-                // publish to maven central
-                repo.maven(mvn -> {
-                    mvn.setName(PUBLISH_TO_MAVEN_CENTRAL);
-                    mvn.credentials(cred -> {
-                        cred.setUsername(ossrhUser);
-                        cred.setPassword(ossrhPswd);
-                    });
-                    mvn.authentication(auth -> {
-                        auth.create("basic", BasicAuthentication.class);
-                    });
-
-                    try {
-                        // set to SNAPSHOT as default,
-                        // if release, then change in withType(PublishToMavenRepository.class)
-                        mvn.setUrl(new URI(OSS_SNAPSHOT));
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                    }
-                });
-            } else {
-                // if "ossrh.user" not provided, then publish to local
-                repo.maven(mvn -> {
-                    mvn.setName("local");
-                    DirectoryProperty buildDir = project.getLayout().getBuildDirectory();
-                    mvn.setUrl(buildDir.dir("releases"));
-                });
-            }
-        });
 
     }
 
