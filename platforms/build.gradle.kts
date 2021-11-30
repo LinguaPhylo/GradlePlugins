@@ -21,7 +21,6 @@ dependencies {
 }
 
 publishing {
-    // TODO Problem to have any repo, if use plugin
 //    repositories {
 //        maven {
 //            // plugins to local build/releases
@@ -30,6 +29,8 @@ publishing {
 //    }
     publications {
         afterEvaluate {
+            val licenseName = "GNU Lesser General Public License, version 3"
+            val licenseURL = "https://www.gnu.org/licenses/lgpl-3.0.txt"
             val pluginBundle = project.extensions.getByName("pluginBundle") as com.gradle.publish.PluginBundleExtension
             named<MavenPublication>("pluginMaven") {
                 pom {
@@ -44,8 +45,8 @@ publishing {
                     }
                     licenses {
                         license {
-                            name.set("GNU Lesser General Public License, version 3")
-                            url.set("https://www.gnu.org/licenses/lgpl-3.0.txt")
+                            name.set(licenseName)
+                            url.set(licenseURL)
                         }
                     }
                 }
@@ -64,8 +65,8 @@ publishing {
                     }
                     licenses {
                         license {
-                            name.set("GNU Lesser General Public License, version 3")
-                            url.set("https://www.gnu.org/licenses/lgpl-3.0.txt")
+                            name.set(licenseName)
+                            url.set(licenseURL)
                         }
                     }
                 }
@@ -84,8 +85,8 @@ publishing {
                     }
                     licenses {
                         license {
-                            name.set("GNU Lesser General Public License, version 3")
-                            url.set("https://www.gnu.org/licenses/lgpl-3.0.txt")
+                            name.set(licenseName)
+                            url.set(licenseURL)
                         }
                     }
                 }
