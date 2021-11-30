@@ -1,18 +1,15 @@
 package io.github.linguaphylo.platforms;
 
 import org.gradle.api.Action;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.publish.PublicationContainer;
 import org.gradle.api.publish.PublishingExtension;
-import org.gradle.api.publish.maven.MavenPublication;
-import org.gradle.api.publish.maven.tasks.PublishToMavenRepository;
 import org.gradle.authentication.http.BasicAuthentication;
 import org.gradle.plugins.signing.SigningExtension;
-import org.gradle.plugins.signing.SigningPlugin;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,7 +32,7 @@ public class LPhyPublishPlugin implements Plugin<Project> {
     public static final String OSSRH_PSWD = "ossrh.pswd";
     public static final String OSS_SNAPSHOT ="https://s01.oss.sonatype.org/content/repositories/snapshots/";
     public static final String OSS_RELEASE ="https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/";
-    public static final String PUBLISH_TO_MAVEN_CENTRAL = "maven";
+    public static final String PUBLISH_TO_MAVEN_CENTRAL = "nexus";
     public static final String PUBLISH_TO_LOCAL = "local";
     public static final String LOCAL_RELEASE_DIR = "releases";
 
@@ -54,47 +51,8 @@ public class LPhyPublishPlugin implements Plugin<Project> {
             public void execute(final Project project) {
                 // config repos
                 configurePublishingRepos(project, hasOSSRHCredentials);
-            }
-        });
-
-
-        // update url, and signing MavenPublication
-        project.getTasks().withType(PublishToMavenRepository.class).configureEach(new Action<PublishToMavenRepository>() {
-            // project.getVersion() not working in config
-            final boolean isReleaseVersion = !project.getVersion().toString().endsWith(STR_SNAPSHOT);
-            @Override
-            public void execute(PublishToMavenRepository pubToMaven) {
-                MavenArtifactRepository repo = pubToMaven.getRepository();
-                pubToMaven.doFirst(new Action<Task>() {
-                    @Override
-                    public void execute(Task task) {
-                        // if repo name sets to "maven" and is release version, then use deploy url
-                        if (PUBLISH_TO_MAVEN_CENTRAL.equalsIgnoreCase(repo.getName())) {
-                            if (isReleaseVersion) {
-                                try {
-                                    repo.setUrl(new URI(OSS_RELEASE));
-                                } catch (URISyntaxException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                        /* signing {
-                             sign(publishing.publications.matching{ it!!.name.toLowerCase().contains("lphy") })
-                           } */
-                        // if signing properties are provided
-                        if (isSigning) {
-                            project.getPlugins().apply(SigningPlugin.class);
-                            SigningExtension signExt = project.getExtensions().getByType(SigningExtension.class);
-
-                            MavenPublication mavPub = pubToMaven.getPublication();
-                            System.out.println("Signing MavenPublication " + mavPub.getName());
-                            signExt.sign(mavPub);
-                        }
-                        System.out.println("Publishing the " + (isReleaseVersion ? "release" : STR_SNAPSHOT.toLowerCase()) +
-                                " version " + project.getVersion());
-                    }
-                });
+                //signing
+                signingPublications(project, isSigning);
             }
         });
     }
@@ -119,6 +77,8 @@ public class LPhyPublishPlugin implements Plugin<Project> {
     } */
     private void configurePublishingRepos(final Project project, final boolean toOSSRH) {
         project.getExtensions().configure(PublishingExtension.class, new Action<PublishingExtension>() {
+            final boolean isReleaseVersion = !project.getVersion().toString().endsWith(STR_SNAPSHOT);
+
             @Override
             public void execute(PublishingExtension pubExt) {
                 pubExt.repositories(new Action<RepositoryHandler>() {
@@ -139,8 +99,10 @@ public class LPhyPublishPlugin implements Plugin<Project> {
                                 });
 
                                 try {
-                                    // set to SNAPSHOT as default, update in tasks.withType(PublishToMavenRepository.class)
-                                    mvn.setUrl(new URI(OSS_SNAPSHOT));
+                                    if (isReleaseVersion)
+                                        mvn.setUrl(new URI(OSS_RELEASE));
+                                    else
+                                        mvn.setUrl(new URI(OSS_SNAPSHOT));
                                 } catch (URISyntaxException e) {
                                     e.printStackTrace();
                                 }
@@ -156,6 +118,28 @@ public class LPhyPublishPlugin implements Plugin<Project> {
                     }
                 });
 
+            }
+        });
+    }
+
+    /*signing {
+      sign(publishing.publications.matching {
+          it!!.name.toLowerCase().contains("lphy")
+                || it.name.toLowerCase().contains("pluginmaven")
+      })
+    }*/
+    private void signingPublications(final Project project, final boolean isSigning) {
+        project.getExtensions().configure(SigningExtension.class, new Action<SigningExtension>() {
+
+            @Override
+            public void execute(SigningExtension signingExt) {
+                if (isSigning) {
+                    PublicationContainer pubs = project.getExtensions().getByType(PublishingExtension.class).getPublications();
+                    if (pubs.isEmpty())
+                        throw new GradleException("Cannot find any publication during signing ! project = " + project.getName());
+                    // sign every publication
+                    signingExt.sign(pubs);
+                }
             }
         });
     }

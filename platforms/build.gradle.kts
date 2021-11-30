@@ -1,54 +1,37 @@
 plugins {
     //`java-library`
+    signing
     `maven-publish`
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "0.18.0"
-    id("io.github.linguaphylo.platforms.lphy-java") version "0.1.0-SNAPSHOT"
-    id("io.github.linguaphylo.platforms.lphy-publish") version "0.1.0-SNAPSHOT"
+    id("io.github.linguaphylo.platforms.lphy-java") version "0.1.0"
+    id("io.github.linguaphylo.platforms.lphy-publish") version "0.1.0"
 }
 
 //base.archivesName.set("lphy-platforms")
 group = "io.github.linguaphylo"
-version = "0.1.0-SNAPSHOT"
-
-repositories {
-//    gradlePluginPortal()
-    mavenCentral()
-}
+version = "0.1.0"
 
 dependencies {
 //    testImplementation("junit:junit:4.13")
 }
 
 publishing {
+    // uncomment below when publishing to local without using platform plugins
 //    repositories {
 //        maven {
+//            name = "local-release"
 //            // plugins to local build/releases
 //            url = uri(layout.buildDirectory.dir("releases"))
 //        }
 //    }
     publications {
         afterEvaluate {
-            val licenseName = "GNU Lesser General Public License, version 3"
-            val licenseURL = "https://www.gnu.org/licenses/lgpl-3.0.txt"
             val pluginBundle = project.extensions.getByName("pluginBundle") as com.gradle.publish.PluginBundleExtension
             named<MavenPublication>("pluginMaven") {
                 pom {
                     name.set("lphy-platforms")
                     description.set(pluginBundle.description)
-                    url.set(pluginBundle.website)
-                    developers {
-                        developer {
-                            name.set("Walter Xie")
-                            id.set("walterxie")
-                        }
-                    }
-                    licenses {
-                        license {
-                            name.set(licenseName)
-                            url.set(licenseURL)
-                        }
-                    }
                 }
             }
             named<MavenPublication>("lphy-javaPluginMarkerMaven") {
@@ -56,19 +39,6 @@ publishing {
                     val plugin = pluginBundle.plugins.getByName("lphy-java")
                     name.set(plugin.displayName)
                     description.set(plugin.description)
-                    url.set(pluginBundle.website)
-                    developers {
-                        developer {
-                            name.set("Walter Xie")
-                            id.set("walterxie")
-                        }
-                    }
-                    licenses {
-                        license {
-                            name.set(licenseName)
-                            url.set(licenseURL)
-                        }
-                    }
                 }
             }
             named<MavenPublication>("lphy-publishPluginMarkerMaven") {
@@ -76,19 +46,6 @@ publishing {
                     val plugin = pluginBundle.plugins.getByName("lphy-publish")
                     name.set(plugin.displayName)
                     description.set(plugin.description)
-                    url.set(pluginBundle.website)
-                    developers {
-                        developer {
-                            name.set("Walter Xie")
-                            id.set("walterxie")
-                        }
-                    }
-                    licenses {
-                        license {
-                            name.set(licenseName)
-                            url.set(licenseURL)
-                        }
-                    }
                 }
             }
         }
@@ -109,8 +66,8 @@ gradlePlugin {
 }
 
 pluginBundle {
-    website = "https://github.com/LinguaPhylo/GradlePlugins"
-    vcsUrl = "https://github.com/LinguaPhylo/GradlePlugins"
+    website = "${extra["web"]}"
+    vcsUrl = "${extra["web"]}"
     description = "Gradle plugins for LPhy conventions"
 
     (plugins) {
@@ -129,11 +86,13 @@ pluginBundle {
             version = project.version.toString()
         }
     }
-//    mavenCoordinates {
-//        groupId = project.group.toString()
-//        artifactId = project.name
-//        version = project.version.toString()
-//    }
 }
 
+// uncomment below when publishing to local without using platform plugins
+//signing {
+//    sign(publishing.publications.matching {
+//        it!!.name.toLowerCase().contains("lphy")
+//                || it.name.toLowerCase().contains("pluginmaven")
+//    })
+//}
 
