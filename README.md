@@ -2,9 +2,12 @@
 
 Define lphy extension conventions and share the build logic.
 
-## lphy-java
+The released versions are available in the Maven Central Repository:
+https://search.maven.org/artifact/io.github.linguaphylo/platforms.
 
-Use Java 16 and overwrite java related tasks to use module-path.
+## 1) lphy-java
+
+### Usage
 
 ```kotlin
 plugins {
@@ -12,7 +15,16 @@ plugins {
 }
 ```
 
-## lphy-publish
+### Features
+
+1. Constrain to Java 16 or higher, and overwrite java related tasks to use module-path.
+2. Configure `compileJava` task to use module-path to compile classes;
+3. Configure `javadoc` task to use html5 which solves the issue using >= Java 9, and also turn off warnings.
+
+
+## 2) lphy-publish
+
+### Usage
 
 ```kotlin
 plugins {
@@ -20,8 +32,21 @@ plugins {
 }
 ```
 
-Then, use the following command to publish,
-where the backslash is used to break lines :
+### Features
+
+1. Configure publishing repositories;
+
+If there are OSSRH properties provided, then publish to the Maven releases repository
+if version does not end with "SNAPSHOT",
+otherwise publish to the Maven snapshots repository. 
+If no OSSRH properties, then publish to the local folder "releases" under the build directory.
+
+2. Signing the publications defined in the project, if there are signing properties provided.
+
+### Command line
+
+Then, use the following command to publish, where `-P` defines the Gradle properties,
+and where the backslash is used to break lines :
 
 ```bash
 ./gradlew clean
