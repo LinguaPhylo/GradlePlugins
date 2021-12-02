@@ -7,6 +7,8 @@ https://search.maven.org/artifact/io.github.linguaphylo/platforms.
 
 ## 1) lphy-java
 
+Use Java 16 and overwrite java related tasks to use module-path.
+
 ### Usage
 
 ```kotlin
@@ -23,6 +25,8 @@ plugins {
 
 
 ## 2) lphy-publish
+
+Configure the repositories for maven publishing and proceed signing.
 
 ### Usage
 

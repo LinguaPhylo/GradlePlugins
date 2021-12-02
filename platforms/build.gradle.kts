@@ -10,7 +10,7 @@ plugins {
 
 //base.archivesName.set("lphy-platforms")
 group = "io.github.linguaphylo"
-version = "0.1.0"
+version = "0.1.1"
 
 dependencies {
 //    testImplementation("junit:junit:4.13")
@@ -68,7 +68,7 @@ gradlePlugin {
 pluginBundle {
     website = "${extra["web"]}"
     vcsUrl = "${extra["web"]}"
-    description = "Gradle plugins for LPhy conventions"
+    description = "Gradle plugins for LPhy conventions."
 
     (plugins) {
         "lphy-java" {
@@ -81,8 +81,8 @@ pluginBundle {
         "lphy-publish" {
             // id is captured from java-gradle-plugin configuration
             displayName = "Gradle Maven Publish Plugin"
-            description = "Plugin that provides conventions for building and publishing Docker images for Java applications."
-            tags = listOf("gradle", "lphy", "maven-publish")
+            description = "Configure the repositories for maven publishing and proceed signing."
+            tags = listOf("gradle", "lphy", "maven-publish", "signing")
             version = project.version.toString()
         }
     }

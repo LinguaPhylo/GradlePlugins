@@ -18,8 +18,8 @@ import java.net.URISyntaxException;
  * This is inspired from Gradle plugin code
  * {@code org.gradle.plugin.devel.plugins.MavenPluginPublishPlugin}.
  *
- * It defines maven publishing conventions,
- * and requires signing and maven-publish plugins.
+ * It configures the repositories for maven publishing and proceeds signing.
+ * It requires signing and maven-publish plugins.
  * Java conventions are defined separately.
  * @see LPhyJavaPlugin
  *
