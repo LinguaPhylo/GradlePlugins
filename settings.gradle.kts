@@ -13,9 +13,9 @@ pluginManagement {
 //            println("Temp repo : ${url}")
 //        }
         // uncomment if loading plugin from the maven snapshots repository
-//        maven {
-//            url=uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-//        }
+        maven {
+            url=uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        }
         gradlePluginPortal()
     }
 }
