@@ -10,7 +10,7 @@ plugins {
 
 //base.archivesName.set("lphy-platforms")
 group = "io.github.linguaphylo"
-version = "0.1.1"
+version = "0.1.2"
 
 dependencies {
 //    testImplementation("junit:junit:4.13")
@@ -74,7 +74,7 @@ pluginBundle {
         "lphy-java" {
             // id is captured from java-gradle-plugin configuration
             displayName = "Gradle LPhy Java Plugin"
-            description = "Use Java 16 and overwrite java related tasks to use module-path."
+            description = "Use Java 17 and overwrite java related tasks to use module-path."
             tags = listOf("gradle", "lphy", "java")
             version = project.version.toString()
         }

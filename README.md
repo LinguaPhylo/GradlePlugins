@@ -7,19 +7,19 @@ https://search.maven.org/artifact/io.github.linguaphylo/platforms.
 
 ## 1) lphy-java
 
-Use Java 16 and overwrite java related tasks to use module-path.
+Use Java 17 and overwrite java related tasks to use module-path.
 
 ### Usage
 
 ```kotlin
 plugins {
-    id("io.github.linguaphylo.lphy-java") version "0.1.0"
+    id("io.github.linguaphylo.lphy-java") version "0.1.2"
 }
 ```
 
 ### Features
 
-1. Constrain to Java 16 or higher, and overwrite java related tasks to use module-path.
+1. Constrain to Java 17 or higher, and overwrite java related tasks to use module-path.
 2. Configure `compileJava` task to use module-path to compile classes;
 3. Configure `javadoc` task to use html5 which solves the issue using >= Java 9, and also turn off warnings.
 
@@ -32,7 +32,7 @@ Configure the repositories for maven publishing and proceed signing.
 
 ```kotlin
 plugins {
-    id("io.github.linguaphylo.lphy-publish") version "0.1.0"
+    id("io.github.linguaphylo.lphy-publish") version "0.1.2"
 }
 ```
 
