@@ -4,13 +4,13 @@ plugins {
     `maven-publish`
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "0.18.0"
-    id("io.github.linguaphylo.platforms.lphy-java") version "0.1.2-SNAPSHOT"
-    id("io.github.linguaphylo.platforms.lphy-publish") version "0.1.2-SNAPSHOT"
+    id("io.github.linguaphylo.platforms.lphy-java") version "0.1.2"
+    id("io.github.linguaphylo.platforms.lphy-publish") version "0.1.2"
 }
 
 //base.archivesName.set("lphy-platforms")
 group = "io.github.linguaphylo"
-version = "0.1.2-SNAPSHOT" //-SNAPSHOT
+version = "0.1.2" //-SNAPSHOT
 
 dependencies {
 //    testImplementation("junit:junit:4.13")

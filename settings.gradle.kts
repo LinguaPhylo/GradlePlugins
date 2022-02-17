@@ -5,6 +5,9 @@ include("platforms")
 pluginManagement {
     repositories {
         mavenCentral()
+        maven {
+            url=uri("https://s01.oss.sonatype.org/content/repositories/releases/")
+        }
         // uncomment if loading plugin from the local repo
 //        maven {
 //            name = "local-release"
