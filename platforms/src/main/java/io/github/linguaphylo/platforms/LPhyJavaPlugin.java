@@ -10,7 +10,7 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 import java.util.List;
 
 /**
- * Define Java conventions using Java 16
+ * Define Java conventions using Java 17
  * and the Java Platform Module System (JPMS).
  * Overwrite Java related tasks to use module-path.
  *
@@ -18,13 +18,13 @@ import java.util.List;
  */
 public class LPhyJavaPlugin implements Plugin<Project> {
 
-    public static final JavaVersion MIN_JAVA_VERSION = JavaVersion.VERSION_16;
+    public static final JavaVersion MIN_JAVA_VERSION = JavaVersion.VERSION_17;
 
     public void apply(final Project project) {
 
         /* java {
-              sourceCompatibility = JavaVersion.VERSION_16
-              targetCompatibility = JavaVersion.VERSION_16
+              sourceCompatibility = JavaVersion.VERSION_17
+              targetCompatibility = JavaVersion.VERSION_17
               withSourcesJar()
               withJavadocJar()  } */
         project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
